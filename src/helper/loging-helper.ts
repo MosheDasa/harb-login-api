@@ -2,7 +2,8 @@ import { Page, BrowserContext } from "playwright";
 import { GeneralServer } from "../server/general-server";
 import { logError, logInfo } from "../utils/logger";
 import { redisHelper } from "./redis-helper";
-
+import { paermeter } from "../entity/general-bo";
+require("dotenv").config();
 export const LogingHelper = {
   /**
    * Handles the reCAPTCHA audio challenge.
@@ -124,7 +125,12 @@ export const LogingHelper = {
   ): Promise<boolean> {
     try {
       const cookies = await context.cookies();
-      await redisHelper.set("cookies", JSON.stringify(cookies, null, 2), 60);
+      const expireInSeconds = parseInt("" + process.env.TLS_LOGIN_SESION, 10);
+      await redisHelper.set(
+        paermeter.loginCookies,
+        JSON.stringify(cookies, null, 2),
+        expireInSeconds
+      );
 
       logInfo("Cookies saved successfully to redis.");
       return true;

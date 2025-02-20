@@ -28,6 +28,7 @@ export const LogingController = {
       logInfo("Setting login credentials...");
       await BrowserHelper.setLogin(page);
 
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       logInfo("Checking for reCAPTCHA challenge...");
       const isRecaptchaPresent = await LogingHelper.isRecaptchaPresent(page);
 
@@ -55,7 +56,6 @@ export const LogingController = {
           const isSaveCookiesSuccess = await LogingHelper.saveCookiesToRedis(
             context
           );
-
           await new Promise((resolve) => setTimeout(resolve, 2000));
           return {
             success: isSaveCookiesSuccess,

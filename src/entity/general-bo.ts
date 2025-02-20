@@ -3,3 +3,7 @@ export interface Replay {
   message: string;
   statusCode: string;
 }
+
+export const paermeter = {
+  loginCookies: "HARB_LOGIN_COOKIES",
+};
