@@ -1,7 +1,6 @@
 import { chromium, BrowserContext, Page } from "playwright";
 import { LogingHelper } from "../helper/loging-helper";
 
-import Utils from "../utils/utils";
 import { BrowserHelper } from "../helper/browser-helper";
 import { logError, logInfo } from "../utils/logger";
 
@@ -18,10 +17,7 @@ export const LogingController = {
         args: ["--disable-blink-features=AutomationControlled"],
       });
 
-      context = await BrowserHelper.createBrowserContext(
-        browser,
-        !!process.env.RECORD_VIDEO
-      );
+      context = await BrowserHelper.createBrowserContext(browser);
 
       const page: Page = await context.newPage();
       logInfo("Navigating to login page...");
@@ -32,7 +28,6 @@ export const LogingController = {
       logInfo("Setting login credentials...");
       await BrowserHelper.setLogin(page);
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       logInfo("Checking for reCAPTCHA challenge...");
       const isRecaptchaPresent = await LogingHelper.isRecaptchaPresent(page);
 
@@ -61,6 +56,7 @@ export const LogingController = {
             context
           );
 
+          await new Promise((resolve) => setTimeout(resolve, 2000));
           return {
             success: isSaveCookiesSuccess,
             message: "Login process completed successfully.",
@@ -74,13 +70,13 @@ export const LogingController = {
       logError(`An error occurred during login: ${error.message}`);
       return { success: false, message: error.message };
     } finally {
-      if (browser) {
-        logInfo("Closing browser...");
-        // await browser.close();
-      }
       if (context) {
         logInfo("Cleaning up context...");
-        // await context.close();
+        await context.close();
+      }
+      if (browser) {
+        logInfo("Closing browser...");
+        await browser.close();
       }
     }
   },

@@ -5,12 +5,9 @@ import { logInfo } from "../utils/logger";
 require("dotenv").config();
 
 export const BrowserHelper = {
-  createBrowserContext: async function (
-    browser: any,
-    enableVideo: boolean
-  ): Promise<BrowserContext> {
+  createBrowserContext: async function (browser: any): Promise<BrowserContext> {
     const context = await browser.newContext({
-      ...(enableVideo
+      ...(process.env.RECORD_VIDEO === "true"
         ? {
             recordVideo: {
               dir: `./public/videos/${Utils.getCurrentDateTime()}`,

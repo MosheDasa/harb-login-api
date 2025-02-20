@@ -1,4 +1,5 @@
 import { Redis, Pipeline } from "ioredis";
+import { logError, logInfo } from "../utils/logger";
 require("dotenv").config();
 
 class RedisHelper {
@@ -7,20 +8,14 @@ class RedisHelper {
 
   // Private constructor to prevent direct instantiation
   private constructor() {
-    console.log(
-      "dasa",
-      process.env.HARB_URL,
-      process.env.REDIS_HOST,
-      process.env.REDIS_PORT
-    );
     this.redis = new Redis({
       host: process.env.REDIS_HOST,
       port: Number(process.env.REDIS_PORT),
     });
 
     // Event listeners for Redis connection
-    this.redis.on("connect", () => console.log("✅ Connected to Redis"));
-    this.redis.on("error", (err) => console.error("❌ Redis error:", err));
+    this.redis.on("connect", () => logInfo("✅ Connected to Redis"));
+    this.redis.on("error", (err) => logError("❌ Redis error:", err));
   }
 
   // Singleton instance getter
@@ -34,7 +29,7 @@ class RedisHelper {
   // Close Redis connection
   public async closeConnection(): Promise<void> {
     await this.redis.quit();
-    console.log("🔒 Redis connection closed.");
+    logInfo(`🔒 Redis connection closed.`);
   }
 
   // -------------------------
@@ -55,7 +50,7 @@ class RedisHelper {
       }
       return true;
     } catch (error) {
-      console.error(`❌ Failed to set key "${key}":`, error);
+      logError(`❌ Failed to set key "${key}":`, { error });
       return false;
     }
   }
@@ -65,7 +60,7 @@ class RedisHelper {
     try {
       return await this.redis.get(key);
     } catch (error) {
-      console.error(`❌ Failed to get key "${key}":`, error);
+      logError(`❌ Failed to get key "${key}":`, { error });
       return null;
     }
   }
@@ -76,7 +71,7 @@ class RedisHelper {
       const result = await this.redis.del(key);
       return result > 0;
     } catch (error) {
-      console.error(`❌ Failed to delete key "${key}":`, error);
+      logError(`❌ Failed to delete key "${key}":`, { error });
       return false;
     }
   }
@@ -87,7 +82,7 @@ class RedisHelper {
       const result = await this.redis.exists(key);
       return result === 1;
     } catch (error) {
-      console.error(`❌ Failed to check existence of key "${key}":`, error);
+      logError(`❌ Failed to check existence of key "${key}":`, { error });
       return false;
     }
   }
@@ -101,7 +96,7 @@ class RedisHelper {
     try {
       return await this.redis.lpush(listName, value);
     } catch (error) {
-      console.error(`❌ Failed to push to list "${listName}":`, error);
+      logError(`❌ Failed to push to list "${listName}":`, { error });
       return null;
     }
   }
@@ -111,7 +106,7 @@ class RedisHelper {
     try {
       return await this.redis.lrange(listName, start, end);
     } catch (error) {
-      console.error(`❌ Failed to get list "${listName}":`, error);
+      logError(`❌ Failed to get list "${listName}`, { error });
       return [];
     }
   }
@@ -130,7 +125,7 @@ class RedisHelper {
       await this.redis.hset(hashName, key, value);
       return true;
     } catch (error) {
-      console.error(`❌ Failed to set hash "${hashName}" key "${key}":`, error);
+      logError(`❌ Failed to set hash "${hashName}" key "${key}":`, { error });
       return false;
     }
   }
@@ -140,7 +135,7 @@ class RedisHelper {
     try {
       return await this.redis.hget(hashName, key);
     } catch (error) {
-      console.error(`❌ Failed to get hash "${hashName}" key "${key}":`, error);
+      logError(`❌ Failed to get hash "${hashName}" key "${key}":`, { error });
       return null;
     }
   }
@@ -155,10 +150,9 @@ class RedisHelper {
       await this.redis.publish(channel, message);
       return true;
     } catch (error) {
-      console.error(
-        `❌ Failed to publish message to channel "${channel}":`,
-        error
-      );
+      logError(`❌ Failed to publish message to channel "${channel}":`, {
+        error,
+      });
       return false;
     }
   }
@@ -176,9 +170,10 @@ class RedisHelper {
           callback(message);
         }
       });
-      console.log(`📩 Subscribed to channel "${channel}"`);
+
+      logInfo(`📩 Subscribed to channel "${channel}"`);
     } catch (error) {
-      console.error(`❌ Failed to subscribe to channel "${channel}":`, error);
+      logError(`❌ Failed to subscribe to channel "${channel}":`, { error });
     }
   }
 
@@ -199,7 +194,7 @@ class RedisHelper {
       await this.redis.flushall();
       return true;
     } catch (error) {
-      console.error(`❌ Failed to flush all Redis keys:`, error);
+      logError(`❌ Failed to flush all Redis keys:`, { error });
       return false;
     }
   }
