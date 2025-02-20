@@ -4,28 +4,23 @@ const server = fastify();
 
 const asyncStorage = new AsyncLocalStorage<Map<string, any>>();
 
-export function setRequestContext(userId: string, operationCode: string) {
+export function setRequestContext(loginUser: string) {
   asyncStorage.run(new Map(), () => {
     const store = asyncStorage.getStore();
     if (store) {
-      store.set("userId", userId);
-      store.set("operationCode", operationCode);
+      store.set("loginUser", loginUser);
     }
   });
 }
 
-export function getRequestContext(): { userId: string; operationCode: string } {
+export function getRequestContext(): { loginUser: string } {
   const store = asyncStorage.getStore();
   return {
-    userId: store?.get("userId") || "guest",
-    operationCode: store?.get("operationCode") || "none",
+    loginUser: store?.get("loginUser") || "AFRICA",
   };
 }
 
 server.addHook("preHandler", async (request, reply) => {
-  const userId = (request.headers["x-user-id"] as string) || "guest";
-  const operationCode =
-    (request.headers["x-operation-code"] as string) || "none";
-
-  setRequestContext(userId, operationCode);
+  const userId = (request.headers["x-login-user"] as string) || "AFRICA";
+  setRequestContext(userId);
 });

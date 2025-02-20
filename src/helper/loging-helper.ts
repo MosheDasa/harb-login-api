@@ -3,6 +3,7 @@ import { GeneralServer } from "../server/general-server";
 import { logError, logInfo } from "../utils/logger";
 import { redisHelper } from "./redis-helper";
 import { paermeter } from "../entity/general-bo";
+import { getRequestContext } from "../Hook/fastify";
 require("dotenv").config();
 export const LogingHelper = {
   /**
@@ -126,8 +127,9 @@ export const LogingHelper = {
     try {
       const cookies = await context.cookies();
       const expireInSeconds = parseInt("" + process.env.TLS_LOGIN_SESION, 10);
+      const { loginUser = "unknown" } = getRequestContext();
       await redisHelper.set(
-        paermeter.loginCookies,
+        paermeter.loginCookies + "_" + loginUser,
         JSON.stringify(cookies, null, 2),
         expireInSeconds
       );
