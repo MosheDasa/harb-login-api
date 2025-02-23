@@ -25,6 +25,9 @@ export const LogingController = {
         waitUntil: "domcontentloaded",
       });
 
+      await page.waitForURL("**", {
+        waitUntil: "networkidle",
+      });
       logInfo("Setting login credentials...");
       await BrowserHelper.setLogin(page);
 
@@ -52,6 +55,8 @@ export const LogingController = {
         );
 
         if (!isErrorMessagePresent) {
+          await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+
           logInfo("Saving cookies to redis...");
           const isSaveCookiesSuccess = await LogingHelper.saveCookiesToRedis(
             context

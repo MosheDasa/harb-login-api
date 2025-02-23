@@ -17,8 +17,8 @@ async function startServer() {
     logInfo("Test route registered successfully.");
 
     // הפעלת השרת
-    await server.listen({ port: 3000, host: "0.0.0.0" });
-    logInfo(`Server running at http://localhost:3000`);
+    await server.listen({ port: 3001, host: "0.0.0.0" });
+    logInfo(`Server running at http://localhost:3001`);
   } catch (error) {
     logError("Failed to start server:", { error });
     process.exit(1);
