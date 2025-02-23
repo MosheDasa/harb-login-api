@@ -46,9 +46,7 @@ export const MailHelper = {
       const all = _.find(lastMessage.parts, { which: "" });
 
       const id = lastMessage.attributes.uid;
-
       const idHeader = "Imap-Id: " + id + "\r\n";
-
       const code = await this.simpleParser(idHeader, all);
 
       if (code) {
@@ -81,7 +79,6 @@ export const MailHelper = {
 
       .catch((err: any) => {
         console.error(err);
-
         return false;
       });
 
