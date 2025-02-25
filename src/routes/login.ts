@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { LogingController } from "../controller/loging-controller";
 
 export async function loginRoute(fastify: FastifyInstance) {
-  fastify.get("/api/login", async (request, reply) => {
+  fastify.get("login", async (request, reply) => {
     const result = await LogingController.login();
     return result;
   });

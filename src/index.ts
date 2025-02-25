@@ -35,7 +35,7 @@ process.on("uncaughtException", (err) => {
 logInfo("Registering routes...");
 
 // רישום המסלולים בצורה בטוחה
-server.register(loginRoute);
+server.register(loginRoute, { prefix: "/api/" });
 logInfo("Login route registered successfully.");
 
 server.register(testRoute);
