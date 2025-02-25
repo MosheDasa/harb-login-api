@@ -3,7 +3,7 @@ import { LogingHelper } from "../helper/loging-helper";
 
 import { BrowserHelper } from "../helper/browser-helper";
 import { logError, logDebug } from "../utils/logger";
-
+require("dotenv").config();
 export const LogingController = {
   login: async function () {
     logDebug("Starting login process...");
@@ -13,7 +13,7 @@ export const LogingController = {
 
     try {
       browser = await chromium.launch({
-        headless: false,
+        headless: process.env.HEADLESS === "true",
         args: ["--disable-blink-features=AutomationControlled"],
       });
 

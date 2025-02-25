@@ -23,23 +23,6 @@ export const BrowserHelper = {
     return context;
   },
 
-  // Get a new login page
-  getLoginPage: async function (): Promise<Page> {
-    const browser = await chromium.launch({
-      headless: false,
-      args: ["--disable-blink-features=AutomationControlled"],
-    });
-    const context: BrowserContext = await browser.newContext({
-      recordVideo: {
-        dir: `./public/videos/${Utils.getCurrentDateTime()}`,
-        size: { width: 1280, height: 720 },
-      },
-    });
-    const page: Page = await context.newPage();
-
-    return page;
-  },
-
   setLogin: async function (page: Page): Promise<boolean> {
     logInfo("Filling login credentials...");
     await page.fill("#userId", "" + process.env.USER_ID);
