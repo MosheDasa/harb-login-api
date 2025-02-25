@@ -32,14 +32,9 @@ process.on("uncaughtException", (err) => {
   logError("uncaughtException:" + err.name, err);
 });
 
-logInfo("Registering routes...");
-
 // רישום המסלולים בצורה בטוחה
 server.register(loginRoute, { prefix: "/api/" });
-logInfo("Login route registered successfully.");
-
-server.register(testRoute);
-logInfo("Test route registered successfully.");
+server.register(testRoute, { prefix: "/api/test" });
 
 // הפעלת השרת
 server.listen({ port: 3001, host: "0.0.0.0" });

@@ -1,6 +1,6 @@
 import { Page, BrowserContext } from "playwright";
 import { GeneralServer } from "../server/general-server";
-import { logError, logInfo } from "../utils/logger";
+import { logError, logDebug } from "../utils/logger";
 import { redisHelper } from "./redis-helper";
 import { paermeter } from "../entity/general-bo";
 import { getRequestContext } from "../Hook/fastify";
@@ -15,7 +15,7 @@ export const LogingHelper = {
       const frame = page.frameLocator(
         'iframe[title="recaptcha challenge expires in two minutes"]'
       );
-      logInfo("Attempting to solve reCAPTCHA challenge...");
+      logDebug("Attempting to solve reCAPTCHA challenge...");
 
       await frame.locator("#recaptcha-audio-button").click();
 
@@ -32,7 +32,7 @@ export const LogingHelper = {
         await frame.locator("#audio-response").fill(transcript);
         await frame.locator("#recaptcha-verify-button").click();
 
-        logInfo("reCAPTCHA challenge solved successfully.");
+        logDebug("reCAPTCHA challenge solved successfully.");
         return true;
       }
       return false;
@@ -49,10 +49,10 @@ export const LogingHelper = {
     try {
       const noCodeLink = await page.locator('[class^="SMSOTP_no_code_link"]');
       await noCodeLink.waitFor({ state: "visible", timeout: 5000 });
-      logInfo("Found the 'Send code to email' link.");
+      logDebug("Found the 'Send code to email' link.");
 
       await noCodeLink.click();
-      logInfo("Clicked on the 'Send code to email' link successfully.");
+      logDebug("Clicked on the 'Send code to email' link successfully.");
 
       return true;
     } catch (error: any) {
@@ -69,7 +69,7 @@ export const LogingHelper = {
    */
   getEmailOtpCode: async function (): Promise<string> {
     try {
-      logInfo("Retrieving OTP code from email...");
+      logDebug("Retrieving OTP code from email...");
       return "111111"; // Simulated code retrieval
     } catch (error: any) {
       logError("Failed to retrieve email OTP code: ", error.message);
@@ -85,7 +85,7 @@ export const LogingHelper = {
       const isPresent = await page
         .locator('iframe[title="recaptcha challenge expires in two minutes"]')
         .isVisible();
-      logInfo(`reCAPTCHA challenge present: ${isPresent}`);
+      logDebug(`reCAPTCHA challenge present: ${isPresent}`);
       return isPresent;
     } catch (error: any) {
       logError("Error checking for reCAPTCHA challenge: ", error.message);
@@ -98,7 +98,7 @@ export const LogingHelper = {
    */
   handleSmsSection: async function (page: Page): Promise<boolean> {
     try {
-      logInfo("Handling SMS verification page...");
+      logDebug("Handling SMS verification page...");
       const isCodeSent = await LogingHelper.clickSendCodeToEmail(page);
 
       if (isCodeSent) {
@@ -106,7 +106,7 @@ export const LogingHelper = {
         await new Promise((resolve) => setTimeout(resolve, 9000));
         // dasa await page.fill("#mailOtp", emailOtp);
         await page.click("#loginMailOtpSubmit");
-        logInfo("Email OTP submitted successfully.");
+        logDebug("Email OTP submitted successfully.");
         return true;
       }
 
@@ -134,7 +134,7 @@ export const LogingHelper = {
         expireInSeconds
       );
 
-      logInfo("Cookies saved successfully to redis.");
+      logDebug("Cookies saved successfully to redis.");
       return true;
     } catch (error: any) {
       logError("Failed to save cookies to redis: ", error.message);
@@ -148,7 +148,7 @@ export const LogingHelper = {
         'iframe[title="recaptcha challenge expires in two minutes"]'
       );
       if (!frame) {
-        logInfo("No reCAPTCHA iframe found.");
+        logDebug("No reCAPTCHA iframe found.");
         return false;
       }
 
@@ -179,7 +179,7 @@ export const LogingHelper = {
 
       // אם הגענו לכאן, האלמנט קיים
       const errorMessage = await errorLocator.innerText();
-      logInfo(`Detected error message: ${errorMessage}`);
+      logDebug(`Detected error message: ${errorMessage}`);
       return true;
     } catch {
       // אם האלמנט לא נמצא בזמן המוגדר

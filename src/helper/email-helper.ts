@@ -1,4 +1,4 @@
-import { logError, logInfo } from "../utils/logger";
+import { logError, logDebug } from "../utils/logger";
 const imaps = require("imap-simple");
 const _ = require("lodash");
 const simpleParser = require("mailparser").simpleParser;
@@ -72,7 +72,7 @@ export const MailHelper = {
             .moveMessage(uid, process.env.MAIL_BOX + "/old")
 
             .then(() => {
-              logInfo(`Message with UID ${uid} moved to TargetFolder`);
+              logDebug(`Message with UID ${uid} moved to TargetFolder`);
             });
         });
       })

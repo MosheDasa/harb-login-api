@@ -2,11 +2,11 @@ import { chromium, BrowserContext, Page } from "playwright";
 import { LogingHelper } from "../helper/loging-helper";
 
 import { BrowserHelper } from "../helper/browser-helper";
-import { logError, logInfo } from "../utils/logger";
+import { logError, logDebug } from "../utils/logger";
 
 export const LogingController = {
   login: async function () {
-    logInfo("Starting login process...");
+    logDebug("Starting login process...");
 
     let browser;
     let context: BrowserContext | null = null;
@@ -20,7 +20,7 @@ export const LogingController = {
       context = await BrowserHelper.createBrowserContext(browser);
 
       const page: Page = await context.newPage();
-      logInfo("Navigating to login page...");
+      logDebug("Navigating to login page...");
       await page.goto("" + process.env.HARB_URL, {
         waitUntil: "domcontentloaded",
       });
@@ -28,15 +28,15 @@ export const LogingController = {
       await page.waitForURL("**", {
         waitUntil: "networkidle",
       });
-      logInfo("Setting login credentials...");
+      logDebug("Setting login credentials...");
       await BrowserHelper.setLogin(page);
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      logInfo("Checking for reCAPTCHA challenge...");
+      logDebug("Checking for reCAPTCHA challenge...");
       const isRecaptchaPresent = await LogingHelper.isRecaptchaPresent(page);
 
       if (isRecaptchaPresent) {
-        logInfo("Handling reCAPTCHA challenge...");
+        logDebug("Handling reCAPTCHA challenge...");
         const isRecaptchaSuccess = await LogingHelper.handleRecaptchaChallenge(
           page
         );
@@ -46,7 +46,7 @@ export const LogingController = {
         }
       }
 
-      logInfo("Checking for SMS verification page...");
+      logDebug("Checking for SMS verification page...");
       const isSmsPageSuccess = await LogingHelper.handleSmsSection(page);
 
       if (isSmsPageSuccess) {
@@ -57,7 +57,7 @@ export const LogingController = {
         if (!isErrorMessagePresent) {
           await page.waitForNavigation({ waitUntil: "domcontentloaded" });
 
-          logInfo("Saving cookies to redis...");
+          logDebug("Saving cookies to redis...");
           const isSaveCookiesSuccess = await LogingHelper.saveCookiesToRedis(
             context
           );
@@ -76,11 +76,11 @@ export const LogingController = {
       return { success: false, message: error.message };
     } finally {
       if (context) {
-        logInfo("Cleaning up context...");
+        logDebug("Cleaning up context...");
         await context.close();
       }
       if (browser) {
-        logInfo("Closing browser...");
+        logDebug("Closing browser...");
         await browser.close();
       }
     }

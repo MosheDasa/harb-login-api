@@ -28,6 +28,7 @@ const myFormat = printf(({ level, message, timestamp, method, loginUser }) => {
   );
 
   return JSON.stringify({
+    api: "loginAPi",
     time: formattedTimestamp,
     level: level.toUpperCase(),
     method: method || "unknown",
